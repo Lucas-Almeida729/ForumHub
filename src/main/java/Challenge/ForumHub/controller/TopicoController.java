@@ -1,10 +1,16 @@
 package Challenge.ForumHub.controller;
 
 import Challenge.ForumHub.dto.DadosCadastroTopico;
+import Challenge.ForumHub.dto.DadosDetalhamentoTopico;
+import Challenge.ForumHub.dto.DadosListagemTopico;
 import Challenge.ForumHub.model.Topico;
 import Challenge.ForumHub.repository.TopicoRepository;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
@@ -33,6 +39,26 @@ public class TopicoController {
 
         repository.save(topico);
 
-        return ResponseEntity.ok("Tópico criado com sucesso!");
+        return ResponseEntity.ok(new DadosDetalhamentoTopico(topico));
+    }
+
+    @GetMapping
+    public ResponseEntity<Page<DadosListagemTopico>> listar(
+            @PageableDefault(size = 10, sort = {"dataCriacao"}, direction = Sort.Direction.ASC) Pageable paginacao) {
+
+        var pagina = repository.findAll(paginacao).map(DadosListagemTopico::new);
+
+        return ResponseEntity.ok(pagina);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity detalhar(@PathVariable Long id) {
+
+        if (!repository.existsById(id)) {
+            return ResponseEntity.notFound().build();
+        }
+
+        var topico = repository.getReferenceById(id);
+        return ResponseEntity.ok(new DadosDetalhamentoTopico(topico));
     }
 }
