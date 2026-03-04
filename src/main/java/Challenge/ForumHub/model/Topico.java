@@ -1,5 +1,6 @@
 package Challenge.ForumHub.model;
 
+import Challenge.ForumHub.dto.DadosAtualizacaoTopico;
 import jakarta.persistence.*;
 import lombok.*;
 import java.time.LocalDateTime;
@@ -26,4 +27,11 @@ public class Topico {
 
     private String autor;
     private String curso;
+
+    public void atualizarInformacoes(DadosAtualizacaoTopico dados) {
+        this.titulo = dados.titulo();
+        this.mensagem = dados.mensagem();
+        this.autor = dados.autor();
+        this.curso = dados.curso();
+    }
 }
